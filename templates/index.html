@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIP Growth Calculator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #22c55e;
+      --accent-hover: #16a34a;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --input-bg: #0f172a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      min-height: 100vh;
+      color: var(--text);
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    header p { color: var(--muted); font-size: 1.05rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      margin-bottom: 1.25rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    label {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    input[type="number"], input[type="email"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .btn {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--accent);
+      color: #052e16;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:hover { background: var(--accent-hover); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .stat {
+      background: var(--input-bg);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat .label { font-size: 0.8rem; color: var(--muted); }
+    .stat .value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+      color: var(--accent);
+    }
+    .stat.highlight .value { color: #4ade80; font-size: 1.5rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.65rem 0.5rem;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--muted); font-weight: 500; text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    .msg {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .msg.success { background: rgba(34,197,94,0.15); color: #4ade80; display: block; }
+    .msg.error { background: rgba(239,68,68,0.15); color: #f87171; display: block; }
+    .subscribe-form { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>SIP Growth Calculator</h1>
+      <p>Project your Systematic Investment Plan returns over time</p>
+    </header>
+
+    <div class="grid">
+      <!-- Calculator inputs -->
+      <div class="card">
+        <h2>📊 Investment Details</h2>
+        <label for="monthly">Monthly Investment (₹)</label>
+        <input type="number" id="monthly" value="5000" min="100" step="100" />
+
+        <label for="rate">Expected Annual Return (%)</label>
+        <input type="number" id="rate" value="12" min="0" max="100" step="0.5" />
+
+        <label for="years">Investment Duration (Years)</label>
+        <input type="number" id="years" value="15" min="1" max="50" />
+
+        <button class="btn" id="calcBtn" onclick="calculate()">Calculate Growth</button>
+
+        <div class="subscribe-form">
+          <h2>🔔 Get Notified</h2>
+          <p style="color:var(--muted);font-size:0.9rem;margin-bottom:0.75rem;">
+            Subscribe for future financial growth updates
+          </p>
+          <label for="email">Email address</label>
+          <input type="email" id="email" placeholder="you@example.com" />
+          <button class="btn" id="subBtn" onclick="subscribe()">Subscribe</button>
+          <div id="subMsg" class="msg"></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="card">
+        <h2>📈 Projected Results</h2>
+        <div id="results">
+          <p style="color:var(--muted);text-align:center;padding:2rem 0;">
+            Enter values and click Calculate to see your SIP growth projection.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      SIP Growth Calculator · Powered by Flask + Supabase
+    </footer>
+  </div>
+
+  <script>
+    function formatINR(n) {
+      return "₹" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+    }
+
+    async function calculate() {
+      const btn = document.getElementById("calcBtn");
+      btn.disabled = true;
+      btn.textContent = "Calculating…";
+
+      const monthly = parseFloat(document.getElementById("monthly").value);
+      const rate = parseFloat(document.getElementById("rate").value);
+      const years = parseInt(document.getElementById("years").value);
+
+      try {
+        const res = await fetch("/api/calculate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            monthly_investment: monthly,
+            annual_rate_percent: rate,
+            years: years
+          })
+        });
+        const json = await res.json();
+        if (json.status !== "success") {
+          document.getElementById("results").innerHTML =
+            `<div class="msg error">${json.error || "Calculation failed"}</div>`;
+          return;
+        }
+        const { summary, yearly_data } = json.data;
+        let html = `
+          <div class="summary">
+            <div class="stat"><div class="label">Total Invested</div><div class="value">${formatINR(summary.total_invested)}</div></div>
+            <div class="stat highlight"><div class="label">Final Value</div><div class="value">${formatINR(summary.total_value)}</div></div>
+            <div class="stat"><div class="label">Total Gain</div><div class="value">${formatINR(summary.total_gain)}</div></div>
+            <div class="stat"><div class="label">Gain %</div><div class="value">${summary.gain_percentage}%</div></div>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Year</th><th>Invested</th><th>Value</th><th>Gain</th></tr>
+            </thead>
+            <tbody>
+        `;
+        yearly_data.forEach(row => {
+          html += `<tr>
+            <td>${row.year}</td>
+            <td>${formatINR(row.total_invested)}</td>
+            <td>${formatINR(row.total_value)}</td>
+            <td>${formatINR(row.gain)}</td>
+          </tr>`;
+        });
+        html += "</tbody></table>";
+        document.getElementById("results").innerHTML = html;
+      } catch (e) {
+        document.getElementById("results").innerHTML =
+          `<div class="msg error">Network error: ${e.message}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Calculate Growth";
+      }
+    }
+
+    async function subscribe() {
+      const btn = document.getElementById("subBtn");
+      const msg = document.getElementById("subMsg");
+      const email = document.getElementById("email").value.trim();
+      if (!email) {
+        msg.className = "msg error";
+        msg.textContent = "Please enter your email.";
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = "Subscribing…";
+      msg.className = "msg";
+      msg.textContent = "";
+
+      try {
+        const res = await fetch("/api/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            monthly_investment: parseFloat(document.getElementById("monthly").value),
+            years: parseInt(document.getElementById("years").value)
+          })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          msg.className = "msg success";
+          msg.textContent = json.message || "Subscribed successfully!";
+        } else {
+          msg.className = "msg error";
+          msg.textContent = json.error || "Subscription failed.";
+        }
+      } catch (e) {
+        msg.className = "msg error";
+        msg.textContent = "Network error: " + e.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Subscribe";
+      }
+    }
+
+    // Auto-calculate on load
+    calculate();
+  </script>
+</body>
+</html>
